@@ -12,3 +12,38 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User{
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+  is_verified Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products Product[]
+  wishlist Wishlist[]
+}
+
+model Product{
+  id String @id @default(uuid())
+  name String
+  price Decimal
+  sellerId String
+  embedding Float[] @default([])
+
+  seller User @relation(fields: [sellerId], references: [id])
+  wishlist Wishlist[]
+}
+
+model Wishlist{
+  id String @id @default(uuid())
+  userId String
+  productId String
+  created_at DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  @@unique([productId,userId])
+}
