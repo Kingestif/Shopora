@@ -1,4 +1,5 @@
 import { prisma } from "../../../lib/prisma.js";
+import { ENV } from "../../lib/schemas/env.js";
 import type { userType } from "../../lib/schemas/user.js";
 
 export const createUser = async (user:userType, hashedPassword: string) => {
@@ -9,15 +10,12 @@ export const createUser = async (user:userType, hashedPassword: string) => {
         ...rest
     }
 
-    const id = await prisma.user.create({
+    const createdUser = await prisma.user.create({
         data: {
             ...newUser
         },
-        select:{
-            id: true
-        }
     })
-    return id
+    return createdUser
 }
 
 export const findUserByEmail = async (email:string) => {
@@ -28,4 +26,18 @@ export const findUserByEmail = async (email:string) => {
     })
 
     return user
+}
+
+export const createEmailVerification = async (userId:string, token:string) => {
+    const expireSeconds = Number(ENV.EMAIL_VERIFICATION_EXPIRE)
+    const expires_at = new Date(Date.now() + expireSeconds * 1000) 
+
+    const verificationRecord = await prisma.emailVerification.create({
+        data: {
+            userId,
+            token,
+            expires_at
+        }
+    })
+    return verificationRecord
 }
