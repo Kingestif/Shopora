@@ -34,6 +34,9 @@ model Product{
   price Decimal
   sellerId String
   embedding Float[] @default([])
+  description String
+  imageUrl String 
+  publicId String
 
   seller User @relation(fields: [sellerId], references: [id])
   wishlist Wishlist[]
