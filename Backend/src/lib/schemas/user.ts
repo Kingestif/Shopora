@@ -19,3 +19,7 @@ export const role = z.enum(["BUYER", "SELLER", "ADMIN"])
 export type roleType = z.infer<typeof role>
 export type userType = z.infer<typeof userValidation>
 export type loginType = z.infer<typeof loginValidation>
+
+export const emailVerify = z.object({
+    token: z.string()
+})
