@@ -59,6 +59,13 @@ model emailVerification{
   user User @relation(fields: [userId], references: [id])
 }
 
+model resetPassword {
+  id String @id @default(uuid())
+  email String
+  token String
+  expires_at DateTime
+}
+
 enum Role{
   BUYER
   SELLER
