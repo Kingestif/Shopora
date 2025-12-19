@@ -32,3 +32,10 @@ export const resetPasswordInput = z.object({
     token: z.string(),
     password: z.string()
 })
+
+export const jwtDecode = z.object({
+    id: z.string(),
+    role: role
+})
+
+export type User = z.infer<typeof jwtDecode>
