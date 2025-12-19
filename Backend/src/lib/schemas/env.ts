@@ -11,7 +11,8 @@ const envSchema = z.object({
   JWT_EXPIRE: z.string(),
   RESEND_KEY: z.string(),
   EMAIL_VERIFICATION_URL: z.string(),
-  EMAIL_VERIFICATION_EXPIRE: z.string()
+  EMAIL_VERIFICATION_EXPIRE: z.string(),
+  RESET_PASSWORD_URL: z.url()
 });
 
 type Env = z.infer<typeof envSchema>;
