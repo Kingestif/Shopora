@@ -65,16 +65,40 @@ export const verifyEmail = async (id: string) => {
     return user.id
 }
 
-export const createPasswordResetVerification = async (hashedToken:string, email:string) => {
+export const createPasswordResetVerification = async (hashedToken: string, email: string) => {
     const expireSeconds = Number(ENV.EMAIL_VERIFICATION_EXPIRE)
     const expires_at = new Date(Date.now() + expireSeconds * 1000)
 
     const id = await prisma.resetPassword.create({
         data: {
             email,
-            token:hashedToken,
+            token: hashedToken,
             expires_at
         }
     })
     return id
+}
+
+export const findUserByPasswordVerificationToken = async (token: string) => {
+    const exist = await prisma.resetPassword.findFirst({
+        where: {
+            token: token,
+            expires_at: {
+                gt: new Date()
+            }
+        }
+    })
+
+    return exist
+}
+
+export const changePassword = async (email: string, password: string) => {
+    await prisma.user.update({
+        where: {
+            email
+        },
+        data: {
+            password: password
+        }
+    })
 }

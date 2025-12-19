@@ -3,6 +3,7 @@ import type { loginType, userType } from "../lib/schemas/user.js";
 import * as authRepository from '../respository/authRepository/auth.repo.js'
 import { comparePassword } from "../utils/compare.js";
 import { createToken } from "../utils/crypto.js";
+import { cryptoHash } from "../utils/cryptoHash.js";
 import { sendEmail } from "../utils/email.js";
 import { emailMessage } from "../utils/emailMessage.js";
 import { hash } from "../utils/hash.js";
@@ -57,11 +58,22 @@ export const resetPasswordRequestService = async (email: string) => {
     if (!exist) return
 
     const token = createToken()
-    const hashedToken = await hash(token)
+    const hashedToken = await cryptoHash(token)
     const message = resetPasswordMessage(ENV.RESET_PASSWORD_URL, token)
     const subject = "Reset your password"
 
     await authRepository.createPasswordResetVerification(hashedToken, email)
 
     await sendEmail(email, message, subject)
+}
+
+export const resetPasswordService = async (token: string, password: string) => {
+    const hashedToken = await cryptoHash(token)
+    const exist = await authRepository.findUserByPasswordVerificationToken(hashedToken)
+
+    if (!exist) throw new Error('Invalid or expired reset token')
+
+    const hashedPassword = await hash(password)
+
+    await authRepository.changePassword(exist.email, hashedPassword)
 }

@@ -3,7 +3,7 @@ import * as z from 'zod'
 export const userValidation = z.object({
     name: z.string(),
     email: z.email(),
-    password: z.string().refine((val)=> val.length > 8, {
+    password: z.string().refine((val) => val.length > 8, {
         error: "Password length must exceed 8 characters"
     }),
     role: z.enum(['BUYER', "SELLER", "ADMIN"])
@@ -25,5 +25,10 @@ export const emailVerify = z.object({
 })
 
 export const resetPassVerify = z.object({
-    email:z.string()
+    email: z.string()
+})
+
+export const resetPasswordInput = z.object({
+    token: z.string(),
+    password: z.string()
 })
