@@ -52,9 +52,9 @@ export const emailVerificationService = async (token: string) => {
     return result
 }
 
-export const resetPasswordService = async (email: string) => {
+export const resetPasswordRequestService = async (email: string) => {
     const exist = await authRepository.findUserByEmail(email)
-    if(!exist) return
+    if (!exist) return
 
     const token = createToken()
     const hashedToken = await hash(token)
@@ -62,6 +62,6 @@ export const resetPasswordService = async (email: string) => {
     const subject = "Reset your password"
 
     await authRepository.createPasswordResetVerification(hashedToken, email)
-    
+
     await sendEmail(email, message, subject)
 }
