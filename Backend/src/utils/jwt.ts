@@ -6,8 +6,6 @@ export const generateToken = async (id: string, role: roleType) => {
     const JWT_EXPIRE = Number(process.env.JWT_EXPIRE)
     if(!JWT_SECRET || !JWT_EXPIRE) throw new Error('Server error')
 
-    console.log(JWT_EXPIRE, JWT_SECRET, id, role)
-
     const token = jwt.sign({
         id,
         role
