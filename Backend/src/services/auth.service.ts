@@ -1,6 +1,6 @@
 import { ENV } from "../lib/schemas/env.js";
 import type { loginType, userType } from "../lib/schemas/user.js";
-import * as authRepository from '../respository/authRepository/auth.repo.js'
+import * as authRepository from '../repository/authRepository/auth.repo.js'
 import { comparePassword } from "../utils/compare.js";
 import { createToken } from "../utils/crypto.js";
 import { cryptoHash } from "../utils/cryptoHash.js";
