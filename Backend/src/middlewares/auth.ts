@@ -4,16 +4,16 @@ import { ENV } from "../lib/schemas/env.js";
 import { jwtDecode } from "../lib/schemas/user.js";
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
-    try{
+    try {
         let token = ""
         if (
             req.headers.authorization &&
             req.headers.authorization.split(" ")[0] === "Bearer"
         ) {
-            token= req.headers.authorization.split(" ")[1] ?? ""
+            token = req.headers.authorization.split(" ")[1] ?? ""
         }
 
-        if(!token) throw new Error("Unauthorized")
+        if (!token) throw new Error("Unauthorized")
 
         const decoded = jwt.verify(token, ENV.JWT_SECRET)
         const user = jwtDecode.parse(decoded)
@@ -21,10 +21,49 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         req.user = user
 
         next()
-    }catch(error){
+    } catch (error) {
         return res.status(401).json({
             status: "error",
-            message: (error as Error)?.message   
+            message: (error as Error)?.message
         })
     }
+}
+
+export const isSeller = async (req: Request, res: Response, next: NextFunction) => {
+    const role = req.user?.role
+
+    if (role !== 'SELLER') {
+        return res.status(401).json({
+            status: "error",
+            message: "Unauthorized"
+        })
+    }
+
+    next()
+}
+
+export const isBuyer = async (req: Request, res: Response, next: NextFunction) => {
+    const role = req.user?.role
+
+    if (role !== 'BUYER') {
+        return res.status(401).json({
+            status: "error",
+            message: "Unauthorized"
+        })
+    }
+
+    next()
+}
+
+export const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const role = req.user?.role
+
+    if (role !== 'ADMIN') {
+        return res.status(401).json({
+            status: "error",
+            message: "Unauthorized"
+        })
+    }
+
+    next()
 }
