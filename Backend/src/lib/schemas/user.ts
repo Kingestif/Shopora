@@ -23,3 +23,7 @@ export type loginType = z.infer<typeof loginValidation>
 export const emailVerify = z.object({
     token: z.string()
 })
+
+export const resetPassVerify = z.object({
+    email:z.string()
+})

@@ -64,3 +64,17 @@ export const verifyEmail = async (id: string) => {
 
     return user.id
 }
+
+export const createPasswordResetVerification = async (hashedToken:string, email:string) => {
+    const expireSeconds = Number(ENV.EMAIL_VERIFICATION_EXPIRE)
+    const expires_at = new Date(Date.now() + expireSeconds * 1000)
+
+    const id = await prisma.resetPassword.create({
+        data: {
+            email,
+            token:hashedToken,
+            expires_at
+        }
+    })
+    return id
+}

@@ -5,18 +5,20 @@ import { comparePassword } from "../utils/compare.js";
 import { createToken } from "../utils/crypto.js";
 import { sendEmail } from "../utils/email.js";
 import { emailMessage } from "../utils/emailMessage.js";
+import { hash } from "../utils/hash.js";
 import { generateToken } from "../utils/jwt.js";
-import { hash } from "../utils/password.js";
+import { resetPasswordMessage } from "../utils/resetPasswordMessage.js";
 
 export const signupService = async (user: userType) => {
     const hashedPassword = await hash(user.password)
     const newUser = await authRepository.createUser(user, hashedPassword)
-    const token = await createToken()
+    const token = createToken()
     const message = emailMessage(newUser.name, ENV.EMAIL_VERIFICATION_URL, token)
+    const subject = "Confirm Your Email"
 
     const data = await authRepository.createEmailVerification(newUser.id, token)
 
-    await sendEmail(newUser.email, message);
+    await sendEmail(newUser.email, message, subject);
 
     return newUser.id
 }
@@ -48,4 +50,18 @@ export const emailVerificationService = async (token: string) => {
     if (!result) throw new Error("Email was not verified")
 
     return result
+}
+
+export const resetPasswordService = async (email: string) => {
+    const exist = await authRepository.findUserByEmail(email)
+    if(!exist) return
+
+    const token = createToken()
+    const hashedToken = await hash(token)
+    const message = resetPasswordMessage(ENV.RESET_PASSWORD_URL, token)
+    const subject = "Reset your password"
+
+    await authRepository.createPasswordResetVerification(hashedToken, email)
+    
+    await sendEmail(email, message, subject)
 }
