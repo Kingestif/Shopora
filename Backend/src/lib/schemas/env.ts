@@ -12,7 +12,10 @@ const envSchema = z.object({
   RESEND_KEY: z.string(),
   EMAIL_VERIFICATION_URL: z.string(),
   EMAIL_VERIFICATION_EXPIRE: z.string(),
-  RESET_PASSWORD_URL: z.url()
+  RESET_PASSWORD_URL: z.url(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string()
 });
 
 type Env = z.infer<typeof envSchema>;
