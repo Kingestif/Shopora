@@ -1,3 +1,3 @@
-export const createToken = async () => {
+export const createToken = () => {
     return crypto.randomUUID()
 }
