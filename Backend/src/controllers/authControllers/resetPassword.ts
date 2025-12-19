@@ -3,12 +3,12 @@ import { resetPassVerify } from "../../lib/schemas/user.js";
 import { resetPasswordService } from "../../services/auth.service.js";
 import { ZodError } from "zod";
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const requestPasswordReset = async (req: Request, res: Response) => {
     try {
         const { email } = resetPassVerify.parse(req.body)
         await resetPasswordService(email)
         return res.status(200).json({
-            status:"success",
+            status: "success",
         })
     } catch (error) {
         if (error instanceof ZodError) {
