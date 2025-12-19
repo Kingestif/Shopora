@@ -14,6 +14,7 @@ export const login = async (req: Request, res: Response) => {
         })
 
     } catch (error) {
+        console.log(error)
         if (error instanceof ZodError) {
             return res.status(400).json({
                 status: "error",
