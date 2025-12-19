@@ -32,7 +32,7 @@ export const loginService = async (input: loginType) => {
 
     if (!valid) throw new Error('Invalid Credentials')
 
-    const token = await generateToken(user.id, user.role)
+    const token = generateToken(user.id, user.role)
 
     return token
 }
