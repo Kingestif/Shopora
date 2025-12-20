@@ -1,4 +1,6 @@
+import Navbar from "@/components/ui/Navbar";
 import { Metadata } from "next";
+import './globals.css';
 
 export const metadata: Metadata = {
   title: "Shopora",
@@ -16,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div>Navbar</div>
+        <Navbar/>
         {children}
         <div>Footer</div>
       </body>
