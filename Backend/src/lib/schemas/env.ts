@@ -15,7 +15,9 @@ const envSchema = z.object({
   RESET_PASSWORD_URL: z.url(),
   CLOUDINARY_CLOUD_NAME: z.string(),
   CLOUDINARY_API_KEY: z.string(),
-  CLOUDINARY_API_SECRET: z.string()
+  CLOUDINARY_API_SECRET: z.string(),
+  WINDOW_LIMIT: z.string(),
+  REQUEST_LIMIT: z.string()
 });
 
 type Env = z.infer<typeof envSchema>;
