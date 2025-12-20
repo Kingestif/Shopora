@@ -39,3 +39,7 @@ export const jwtDecode = z.object({
 })
 
 export type User = z.infer<typeof jwtDecode>
+
+export const idSchema = z.object({
+    id: z.uuid()
+})

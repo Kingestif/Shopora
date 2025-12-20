@@ -17,8 +17,12 @@ export const getProductsService = async (id: string) => {
     return products
 };
 
-export const updateProductService = async (input:update) => {
+export const updateProductService = async (input: update) => {
     const product = await sellerRepository.updateProductById(input)
 
     return product
+};
+
+export const deleteProductService = async (id: string) => {
+    await sellerRepository.deleteProduct(id)
 };
