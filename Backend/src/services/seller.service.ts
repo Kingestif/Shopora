@@ -10,3 +10,9 @@ export const postProductService = async (input: product, buffer: any, user: User
 
     return id
 }
+
+export const getProductsService = async (id: string) => {
+    const products = await sellerRepository.fetchProducts(id)
+
+    return products
+};

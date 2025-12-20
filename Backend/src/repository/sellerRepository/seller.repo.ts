@@ -14,3 +14,12 @@ export const createProduct = async (input: product, sellerId: string, result: Up
     })
     return product.id
 }
+
+export const fetchProducts = async (id: string) => {
+    const products = await prisma.product.findMany({
+        where: {
+            sellerId: id
+        }
+    })
+    return products
+};
