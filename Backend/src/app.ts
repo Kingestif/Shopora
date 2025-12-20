@@ -3,7 +3,8 @@ import morgan from 'morgan'
 import authRoutes from './routes/authRoutes.js'
 import sellerRoutes from './routes/sellerRoutes.js'
 import buyerRoutes from './routes/buyerRoutes.js'
-import { isBuyer, isSeller, protect } from './middlewares/auth.js'
+import adminRoutes from './routes/adminRoutes.js'
+import { isAdmin, isBuyer, isSeller, protect } from './middlewares/auth.js'
 const app = express()
 
 app.use(express.json())
@@ -11,6 +12,7 @@ app.use(morgan('dev'))
 app.use('/auth', authRoutes)
 app.use('/seller', protect, isSeller, sellerRoutes)
 app.use('/product', protect, isBuyer, buyerRoutes)
+app.use('/admin', protect, isAdmin, adminRoutes)
 
 app.get('/', (req, res) => {
     res.send("Server is running")
