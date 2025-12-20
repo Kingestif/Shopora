@@ -43,3 +43,7 @@ export type User = z.infer<typeof jwtDecode>
 export const idSchema = z.object({
     id: z.uuid()
 })
+
+export const searchSchema = z.object({
+    query: z.string()
+})
