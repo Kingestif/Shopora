@@ -1,6 +1,7 @@
 import Navbar from "@/components/ui/Navbar";
 import { Metadata } from "next";
 import './globals.css';
+import Footer from "@/components/ui/Footer";
 
 export const metadata: Metadata = {
   title: "Shopora",
@@ -20,7 +21,7 @@ export default function RootLayout({
       <body>
         <Navbar/>
         {children}
-        <div>Footer</div>
+        <Footer/>
       </body>
     </html>
   );
