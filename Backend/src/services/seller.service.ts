@@ -1,4 +1,4 @@
-import type { product } from "../lib/schemas/seller.js";
+import type { product, update } from "../lib/schemas/seller.js";
 import type { User } from "../lib/schemas/user.js";
 import { uploadToCloudinary } from "../utils/upload.js";
 import * as sellerRepository from "../repository/sellerRepository/seller.repo.js"
@@ -15,4 +15,10 @@ export const getProductsService = async (id: string) => {
     const products = await sellerRepository.fetchProducts(id)
 
     return products
+};
+
+export const updateProductService = async (input:update) => {
+    const product = await sellerRepository.updateProductById(input)
+
+    return product
 };

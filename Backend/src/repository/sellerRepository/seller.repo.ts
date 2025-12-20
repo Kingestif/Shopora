@@ -1,5 +1,5 @@
 import { prisma } from "../../../lib/prisma.js";
-import type { product, UploadResult } from "../../lib/schemas/seller.js";
+import type { product, update, UploadResult } from "../../lib/schemas/seller.js";
 
 export const createProduct = async (input: product, sellerId: string, result: UploadResult) => {
     const data = {
@@ -22,4 +22,19 @@ export const fetchProducts = async (id: string) => {
         }
     })
     return products
+};
+
+export const updateProductById = async (input: update) => {
+    const { id, ...rest } = input;
+
+    const data = Object.fromEntries(        //remove undefined fields
+        Object.entries(rest).filter(([_, v]) => v !== undefined)
+    );
+
+    const product = await prisma.product.update({
+        where: { id },
+        data
+    });
+
+    return product
 };

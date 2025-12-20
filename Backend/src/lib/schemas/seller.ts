@@ -23,3 +23,9 @@ export const uploadResult = z.object({
 })
 
 export type UploadResult = z.infer<typeof uploadResult>
+
+export const updateVerification = z.object({
+    id:z.uuid()
+}).merge(productVerification.partial())
+
+export type update = z.infer<typeof updateVerification>
