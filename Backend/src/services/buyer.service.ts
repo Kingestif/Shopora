@@ -5,3 +5,9 @@ export const getProductsService = async () => {
 
     return products
 };
+
+export const getProductService = async (id:string) => {
+    const product = await buyerRepository.getProduct(id)
+    
+    return product
+};
