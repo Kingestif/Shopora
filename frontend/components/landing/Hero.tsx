@@ -21,9 +21,7 @@ export default function Hero() {
       </div>
 
       <div className="container relative z-10 mx-auto h-full px-4 flex items-start pt-32 md:pt-40">
-
         <div className="max-w-4xl space-y-6">
-          
           <h1 className="text-5xl md:text-7xl lg:text-7xl font-semibold tracking-tighter text-white leading-[1.1]">
             Shopping at the <br />
             Speed of Light
@@ -44,6 +42,29 @@ export default function Hero() {
                 <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 
+          - bottom-1 place it at the bottom 
+          - left-4 space from the left
+      */}
+      <div className="absolute bottom-1 left-4 md:left-100 z-10 flex flex-col gap-4 max-md:scale-90 origin-left">
+        <div className="flex items-center gap-3 text-white/70">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-sm font-mono tracking-widest uppercase">System Status: Active</span>
+        </div>
+        
+        <div className="flex gap-8">
+          <div className="space-y-1">
+            <p className="text-white text-2xl font-bold">12k+</p>
+            <p className="text-white/50 text-xs uppercase tracking-tighter font-mono">Global Creators</p>
+          </div>
+          <div className="w-px h-10 bg-white/20" />
+          <div className="space-y-1">
+            <p className="text-white text-2xl font-bold">500+</p>
+            <p className="text-white/50 text-xs uppercase tracking-tighter font-mono">Verified Brands</p>
           </div>
         </div>
       </div>
