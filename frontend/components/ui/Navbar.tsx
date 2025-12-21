@@ -12,7 +12,7 @@ export default function Navbar() {
         
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black transition-transform group-hover:scale-110">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black transition-transform">
               <ShoppingBag className="h-5 w-5" />
             </div>
             <span className="text-xl font-bold tracking-tighter">
