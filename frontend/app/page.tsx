@@ -1,7 +1,11 @@
-import Hero from "@/components/ui/Home";
+import FeatureGrid from "@/components/landing/Features";
+import Hero from "@/components/landing/Hero";
 
 export default function Home() {
   return (
-    <Hero/>
+    <div>
+      <Hero/>
+      <FeatureGrid/>
+    </div>
   );
 }
