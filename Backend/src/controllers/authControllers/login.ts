@@ -9,7 +9,7 @@ export const login = async (req: Request, res: Response) => {
     try {
         const input = loginValidation.parse(req.body)
         const response = await loginService(input)
-        
+
         const isProd = ENV.NODE_ENV === "production"
 
         // Set token in HTTP-only cookie
@@ -29,12 +29,15 @@ export const login = async (req: Request, res: Response) => {
             role: response.role
         })
 
-    } catch (error) {
+    } catch (error:any) {
         console.error(error);
 
-        return res.status(500).json({
+        const status = (error).statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(status).json({
             status: "error",
-            message: "Internal server error"
+            message,
         });
     }
 }

@@ -30,13 +30,16 @@ export const loginService = async (input: loginType) => {
 
     const valid = await comparePassword(input.password, user.password)
 
-    if (!valid) throw new Error('Invalid Credentials')
-
+    if (!valid) {
+        const err = new Error("Invalid email or password") as any;
+        err.statusCode = 401;
+        throw err;
+    }
     const token = generateToken(user.id, user.role)
 
     return {
         token,
-        role:user.role
+        role: user.role
     }
 }
 
