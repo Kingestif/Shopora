@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react"; 
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function LoginPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
-          credentials: "include"
+          credentials: "include",
         }
       );
 
@@ -47,15 +49,10 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.role === "ADMIN") {
-        router.push("/admin");
-      } else if (data.role === "SELLER") {
-        router.push("/seller");
-      } else if (data.role === "BUYER") {
-        router.push("/browse");
-      } else {
-        router.push("/")
-      }
+      if (data.role === "ADMIN") router.push("/admin");
+      else if (data.role === "SELLER") router.push("/seller");
+      else if (data.role === "BUYER") router.push("/browse");
+      else router.push("/");
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -87,11 +84,11 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
               <Link
-                href="#"
+                href="/forgot-password"
                 className="text-xs text-muted-foreground hover:text-black transition-colors"
               >
                 Forgot password?
@@ -100,12 +97,19 @@ export default function LoginPage() {
             <Input
               id="password"
               name="password"
-              type="password"
-              className="rounded-xl h-12 border-slate-200"
+              type={showPassword ? "text" : "password"} 
+              className="rounded-xl h-12 border-slate-200 pr-12"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
