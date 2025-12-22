@@ -1,45 +1,101 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { 
-  ShoppingBag, 
-  ArrowLeft, 
-  ShieldCheck, 
-  Truck, 
+import { useState, useEffect } from "react";
+import {
+  ShoppingBag,
+  ArrowLeft,
+  ShieldCheck,
+  Truck,
   RefreshCcw,
-  Star
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
-const MOCK_PRODUCTS = [
-  {
-    id: "p1",
-    name: "Aero-Tech Shell Jacket",
-    price: 299,
-    seller: "estif",
-    description: "Fully waterproof and breathable 3-layer techwear shell for urban exploration. Engineered with reinforced seams and a modular hood system, this shell is designed to withstand the harshest city environments while maintaining a sleek, minimalist silhouette.",
-    image: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1200&auto=format&fit=crop"
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  imageUrl: string;
+  sellerId: string;
+}
 
 export default function ProductPage() {
   const { id } = useParams();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  const product = MOCK_PRODUCTS.find((p) => p.id === id) || MOCK_PRODUCTS[0];
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/${id}`,
+          {
+            credentials: "include",
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch product: ${res.statusText}`);
+        }
+
+        const json = await res.json();
+
+        if (json.status !== "success" || !json.data) {
+          throw new Error("Invalid response from server");
+        }
+
+        setProduct(json.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
 
   const handleAddToCart = () => {
     setIsAdding(true);
     setTimeout(() => setIsAdding(false), 1000);
   };
 
+  if (loading) {
+    return (
+      <div className="py-20 text-center text-lg font-medium">
+        Loading product...
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="py-20 text-center text-red-500 font-medium">
+        {error || "Product not found"}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Link 
-        href="/browse" 
+      <Link
+        href="/browse"
         className="inline-flex items-center text-sm font-bold uppercase tracking-widest text-slate-400 hover:text-black transition-colors mb-8 group"
       >
         <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -47,12 +103,14 @@ export default function ProductPage() {
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        
         <div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-slate-100">
-          <img 
-            src={product.image} 
+          <Image
+            src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover"
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
           <Badge className="absolute top-8 left-8 bg-white text-black hover:bg-white px-4 py-1 rounded-full font-bold">
             New Arrival
@@ -62,21 +120,26 @@ export default function ProductPage() {
         <div className="flex flex-col justify-center space-y-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
-                Verified Seller: {product.seller}
+              <Badge
+                variant="outline"
+                className="rounded-full border-slate-200 text-slate-500 font-bold uppercase text-[10px]"
+              >
+                Verified Seller
               </Badge>
               <div className="flex items-center text-yellow-500">
                 <Star className="h-3 w-3 fill-current" />
-                <span className="text-[10px] font-bold ml-1 text-black">4.9/5</span>
+                <span className="text-[10px] font-bold ml-1 text-black">
+                  4.9/5
+                </span>
               </div>
             </div>
-            
+
             <h1 className="text-5xl sm:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
               {product.name}
             </h1>
-            
+
             <p className="text-3xl font-black italic tracking-tight text-slate-900">
-              ${product.price}
+              ${Number(product.price).toLocaleString()}
             </p>
           </div>
 
@@ -85,17 +148,17 @@ export default function ProductPage() {
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               onClick={handleAddToCart}
               className="h-16 px-12 rounded-full bg-black text-white hover:bg-zinc-800 text-lg font-bold flex-1 shadow-2xl shadow-black/20"
             >
               <ShoppingBag className="mr-2 h-5 w-5" />
               {isAdding ? "Adding..." : "Add to Bag"}
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
+            <Button
+              variant="outline"
+              size="lg"
               className="h-16 px-8 rounded-full border-2 font-bold hover:bg-slate-50"
             >
               Wishlist
@@ -107,19 +170,25 @@ export default function ProductPage() {
               <div className="p-2 bg-slate-50 rounded-lg text-slate-600">
                 <Truck className="h-5 w-5" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-tight leading-tight">Fast Global Shipping</span>
+              <span className="text-xs font-bold uppercase tracking-tight leading-tight">
+                Fast Global Shipping
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-slate-50 rounded-lg text-slate-600">
                 <RefreshCcw className="h-5 w-5" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-tight leading-tight">30-Day Returns</span>
+              <span className="text-xs font-bold uppercase tracking-tight leading-tight">
+                30-Day Returns
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-slate-50 rounded-lg text-slate-600">
                 <ShieldCheck className="h-5 w-5" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-tight leading-tight">Secure Payment</span>
+              <span className="text-xs font-bold uppercase tracking-tight leading-tight">
+                Secure Payment
+              </span>
             </div>
           </div>
         </div>
