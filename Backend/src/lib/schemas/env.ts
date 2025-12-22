@@ -17,7 +17,8 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string(),
   CLOUDINARY_API_SECRET: z.string(),
   WINDOW_LIMIT: z.string(),
-  REQUEST_LIMIT: z.string()
+  REQUEST_LIMIT: z.string(),
+  FRONTEND_URL: z.url()
 });
 
 type Env = z.infer<typeof envSchema>;
