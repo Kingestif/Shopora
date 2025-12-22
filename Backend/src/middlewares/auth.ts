@@ -6,7 +6,11 @@ import { jwtDecode } from "../lib/schemas/user.js";
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
     try {
         let token = ""
-        if (
+
+        if (req.cookies && req.cookies.authToken) {
+            token = req.cookies.authToken
+        }
+        else if (   // Fallback to Authorization header
             req.headers.authorization &&
             req.headers.authorization.split(" ")[0] === "Bearer"
         ) {
