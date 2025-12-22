@@ -10,12 +10,6 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         if (req.cookies && req.cookies.authToken) {
             token = req.cookies.authToken
         }
-        else if (   // Fallback to Authorization header
-            req.headers.authorization &&
-            req.headers.authorization.split(" ")[0] === "Bearer"
-        ) {
-            token = req.headers.authorization.split(" ")[1] ?? ""
-        }
 
         if (!token) throw new Error("Unauthorized")
 

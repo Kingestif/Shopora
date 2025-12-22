@@ -5,6 +5,8 @@ import { emailVerification } from '../controllers/authControllers/emailVerificat
 import { requestPasswordReset } from '../controllers/authControllers/requestPasswordReset.js'
 import { resetPassword } from '../controllers/authControllers/resetPassword.js'
 import { logout } from '../controllers/authControllers/logout.js'
+import { currentUser } from '../controllers/authControllers/currentUser.js'
+import { protect } from '../middlewares/auth.js'
 const router = express.Router()
 
 router.post('/login', login)
@@ -13,5 +15,6 @@ router.post('/emailVerification', emailVerification)
 router.post('/reset-request', requestPasswordReset)
 router.post('/reset-password', resetPassword)
 router.post('/logout', logout)
+router.get('/me', protect, currentUser )
 
 export default router
