@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -15,82 +15,58 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 
-const MOCK_PRODUCTS = [
-  {
-    id: "1",
-    name: "Aero-Tech Shell Jacket",
-    price: 299,
-    description:
-      "Fully waterproof and breathable 3-layer techwear shell for urban exploration.",
-    image:
-      "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "2",
-    name: "Carbon Fiber Wallet",
-    price: 85,
-    description: "Aerospace grade carbon fiber with RFID blocking technology.",
-    image:
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "3",
-    name: "Quantum H1 Headphones",
-    price: 450,
-    description:
-      "Active noise cancelling with high-fidelity spatial audio drivers.",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "4",
-    name: "Modular Cargo Pants",
-    price: 160,
-    description: "Multi-pocket cargo pants with water-resistant DWR coating.",
-    image:
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "5",
-    name: "Aero-Tech Shell Jacket",
-    price: 299,
-    description:
-      "Fully waterproof and breathable 3-layer techwear shell for urban exploration.",
-    image:
-      "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "6",
-    name: "Carbon Fiber Wallet",
-    price: 85,
-    description: "Aerospace grade carbon fiber with RFID blocking technology.",
-    image:
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "7",
-    name: "Quantum H1 Headphones",
-    price: 450,
-    description:
-      "Active noise cancelling with high-fidelity spatial audio drivers.",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "8",
-    name: "Modular Cargo Pants",
-    price: 160,
-    description: "Multi-pocket cargo pants with water-resistant DWR coating.",
-    image:
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop",
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: string; 
+  description: string;
+  imageUrl: string;
+}
 
 export default function BrowsePage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
 
-  const filteredProducts = MOCK_PRODUCTS.filter((product) =>
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product`, {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch products: ${res.statusText}`);
+        }
+
+        const json = await res.json();
+
+        if (json.status !== "success" || !Array.isArray(json.data)) {
+          throw new Error("Invalid response from server");
+        }
+
+        setProducts(json.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -98,9 +74,9 @@ export default function BrowsePage() {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       });
-      router.push("/login"); 
+      router.push("/login");
     } catch (err) {
       console.error("Logout failed", err);
     }
@@ -148,63 +124,74 @@ export default function BrowsePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
-        {filteredProducts.map((product) => (
-          <Link
-            href={`/product/${product.id}`}
-            key={product.id}
-            className="group"
-          >
-            <Card className="border-none shadow-none bg-transparent overflow-hidden">
-              <div className="relative aspect-3/4 overflow-hidden rounded-[2rem] bg-slate-100 mb-4">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
-                />
-                <div className="absolute top-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                  <Button
-                    size="icon"
-                    className="rounded-full bg-white text-black hover:bg-black hover:text-white shadow-xl"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+      {loading && (
+        <div className="py-20 text-center text-lg font-medium">Loading products...</div>
+      )}
 
-              <CardContent className="p-0 space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-bold text-xl text-slate-900 tracking-tight leading-tight">
-                      {product.name}
-                    </h3>
-                  </div>
-                  <span className="font-black italic text-lg tracking-tighter">
-                    ${product.price}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-500 line-clamp-2 font-medium">
-                  {product.description}
-                </p>
-              </CardContent>
+      {error && (
+        <div className="py-20 text-center text-red-500 font-medium">{error}</div>
+      )}
 
-              <CardFooter className="p-0 pt-4">
-                <div className="flex items-center text-xs font-bold uppercase tracking-widest text-black group-hover:gap-3 transition-all">
-                  View Piece <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {filteredProducts.length === 0 && (
+      {!loading && !error && filteredProducts.length === 0 && (
         <div className="py-20 text-center">
           <p className="text-slate-400 font-medium italic">
             No products found matching your search.
           </p>
+        </div>
+      )}
+
+      {!loading && !error && filteredProducts.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+          {filteredProducts.map((product) => (
+            <Link
+              href={`/product/${product.id}`}
+              key={product.id}
+              className="group"
+            >
+              <Card className="border-none shadow-none bg-transparent overflow-hidden">
+                <div className="relative aspect-3/4 overflow-hidden rounded-[2rem] bg-slate-100 mb-4">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    // unoptimized
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
+                  />
+                  <div className="absolute top-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <Button
+                      size="icon"
+                      className="rounded-full bg-white text-black hover:bg-black hover:text-white shadow-xl"
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <CardContent className="p-0 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-xl text-slate-900 tracking-tight leading-tight">
+                        {product.name}
+                      </h3>
+                    </div>
+                    <span className="font-black italic text-lg tracking-tighter">
+                      ${Number(product.price).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-500 line-clamp-2 font-medium">
+                    {product.description}
+                  </p>
+                </CardContent>
+
+                <CardFooter className="p-0 pt-4">
+                  <div className="flex items-center text-xs font-bold uppercase tracking-widest text-black group-hover:gap-3 transition-all">
+                    View Piece <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))}
         </div>
       )}
     </div>
