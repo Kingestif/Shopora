@@ -1,6 +1,7 @@
-"use client"
+"use client";
+
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   LayoutDashboard,
@@ -12,9 +13,23 @@ import {
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
   let role: "seller" | "admin" = "seller";
   if (pathname.includes("admin")) role = "admin";
   if (pathname.includes("seller")) role = "seller";
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", 
+      });
+      router.push("/login"); 
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-slate-50/50">
@@ -55,18 +70,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 <LayoutDashboard className="h-4 w-4" /> <div className="text-lg">Control Panel</div>
               </Link>
-              {/* <Link
-                href="/admin/users"
-                className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-slate-50 rounded-lg text-sm transition-colors"
-              >
-                <Users className="h-4 w-4" /> <div className="text-lg">Users</div>
-              </Link>
-              <Link
-                href="/admin/products"
-                className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-slate-50 rounded-lg text-sm transition-colors"
-              >
-                <ShoppingBag className="h-4 w-4" /> <div className="text-lg">Products</div>
-              </Link> */}
               <Link
                 href=""
                 className="flex items-center gap-3 px-3 py-2 text-slate-500 hover:bg-slate-50 rounded-lg text-sm transition-colors"
@@ -76,8 +79,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </>
           )}
         </nav>
+
         <div className="p-4 border-t border-slate-100">
-          <button className="flex items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-50 w-full rounded-lg text-sm transition-colors">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-50 w-full rounded-lg text-sm transition-colors"
+          >
             <LogOut className="h-4 w-4" /> Logout
           </button>
         </div>
