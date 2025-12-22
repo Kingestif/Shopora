@@ -19,7 +19,8 @@ const envSchema = z.object({
   WINDOW_LIMIT: z.string(),
   REQUEST_LIMIT: z.string(),
   FRONTEND_URL: z.url(),
-  COOKIE_DURATION: z.string()
+  COOKIE_DURATION: z.string(),
+  NODE_ENV: z.string()
 });
 
 type Env = z.infer<typeof envSchema>;
