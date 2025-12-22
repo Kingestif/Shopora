@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +10,50 @@ import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
+  const router = useRouter(); 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const role = searchParams.get("role")?.toUpperCase() || "BUYER";
   const isSeller = role === "SELLER";
 
-  const minLength = 8;
+  const minLength = 9;
   const isPasswordValid = password.length >= minLength;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`, { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      router.push(`/check-email?email=${encodeURIComponent(email)}`);
+
+      setName("");
+      setEmail("");
+      setPassword("");
+      setLoading(false);
+    } catch (err) {
+      setError("Network error");
+      setLoading(false);
+    }
+  };
 
   return (
     <Card className="border-none shadow-2xl bg-white/80 backdrop-blur-sm">
@@ -31,18 +68,37 @@ export default function SignupPage() {
         </CardDescription>
       </CardHeader>
       
-      <form action="/api/auth/register" method="POST">
+      <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <input type="hidden" name="role" value={role} />
 
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" placeholder="John Doe" className="rounded-xl h-12 border-slate-200" required />
+            <Input
+              id="name"
+              name="name"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="rounded-xl h-12 border-slate-200"
+              required
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="m@example.com" className="rounded-xl h-12 border-slate-200" required />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="m@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="rounded-xl h-12 border-slate-200"
+              required
+            />
           </div>
 
           <div className="space-y-2">
@@ -67,10 +123,10 @@ export default function SignupPage() {
           
           <Button 
             type="submit" 
-            disabled={!isPasswordValid && password.length > 0}
+            disabled={!isPasswordValid || loading}
             className="w-full h-12 rounded-xl bg-black text-white hover:bg-gray-800 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSeller ? "Register as Seller" : "Sign Up"}
+            {loading ? "Signing Up..." : isSeller ? "Register as Seller" : "Sign Up"}
           </Button>
         </CardContent>
       </form>
