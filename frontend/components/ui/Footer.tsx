@@ -35,9 +35,9 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold uppercase tracking-wider mb-4">Sell</h3>
             <ul className="space-y-2">
-              <li><Link href="/seller/signup" className="text-lg text-gray-400 hover:text-white transition-colors">Become a Seller</Link></li>
               <li><Link href="/seller/guidelines" className="text-lg text-gray-400 hover:text-white transition-colors">Guidelines</Link></li>
-              <li><Link href="/seller/dashboard" className="text-lg text-gray-400 hover:text-white transition-colors">Seller Portal</Link></li>
+              <li><Link href="" className="text-lg text-gray-400 hover:text-white transition-colors">Become a Seller</Link></li>
+              <li><Link href="" className="text-lg text-gray-400 hover:text-white transition-colors">Seller Portal</Link></li>
             </ul>
           </div>
 

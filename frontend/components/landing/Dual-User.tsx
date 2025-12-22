@@ -41,7 +41,7 @@ export default function DualUserSection() {
             Join a global network of creators. Scale your business with our lightning-fast infrastructure and global reach.
           </p>
           <Link 
-            href="/seller/signup" 
+            href="/signup?role=seller" 
             className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-full font-bold hover:bg-gray-800 transition-all hover:scale-105"
           >
             Become a Seller

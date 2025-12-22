@@ -35,7 +35,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <Button asChild className="hidden md:flex rounded-full bg-white text-black hover:bg-gray-200 px-6">
-            <Link href="/auth/signup">Get Started</Link>
+            <Link href="/signup?role=buyer">Get Started</Link>
           </Button>
 
           <Sheet>
@@ -51,7 +51,7 @@ export default function Navbar() {
                 <Link href="/about" className="text-lg font-semibold hover:text-gray-400">About</Link>
                 <hr className="border-white/10 my-2" />
                 <Button asChild className="w-full rounded-xl bg-white text-black hover:bg-gray-200">
-                  <Link href="/auth/signup">Get Started</Link>
+                  <Link href="/signup?role=buyer">Get Started</Link>
                 </Button>
               </nav>
             </SheetContent>

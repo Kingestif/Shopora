@@ -64,7 +64,7 @@ export default function FeatureGrid() {
              <p className="text-slate-400 text-lg mt-2">
                Join 10k+ creators selling globally.
              </p>
-             <Link href="/seller/signup" className="mt-4 text-xs font-bold uppercase tracking-widest hover:underline">
+             <Link href="/signup?role=seller" className="mt-4 text-xs font-bold uppercase tracking-widest hover:underline">
                Apply to sell →
              </Link>
           </Card>

@@ -37,7 +37,7 @@ export default function Hero() {
               size="xl"
               className="bg-white group text-black hover:bg-gray-200 px-10 py-2 rounded-full font-medium text-lg shadow-2xl"
             >
-              <Link href="/auth/signup" className="inline-flex items-center gap-2">
+              <Link href="/signup?role=buyer" className="inline-flex items-center gap-2">
                 Start Exploring
                 <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
