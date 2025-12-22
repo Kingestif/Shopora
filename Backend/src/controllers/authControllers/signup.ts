@@ -14,16 +14,11 @@ export const signup = async (req:Request, res: Response) => {
         })
 
     }catch(error){
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                status: "error",
-                message: error.issues
-            });
-        }else{
-            return res.status(500).json({
-                status: "error",
-                message: (error as Error)?.message
-            });
-        }
+        console.error(error);
+
+        return res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
     }
 }

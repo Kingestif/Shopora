@@ -9,22 +9,16 @@ export const login = async (req: Request, res: Response) => {
         const token = await loginService(input)
 
         return res.status(200).json({
-            status:"success",
+            status: "success",
             message: token
         })
 
     } catch (error) {
-        console.log(error)
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                status: "error",
-                message: error.issues
-            })
-        } else {
-            return res.status(500).json({
-                status: "error",
-                message: (error as Error)?.message
-            })
-        }
+        console.error(error);
+
+        return res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
     }
 }
