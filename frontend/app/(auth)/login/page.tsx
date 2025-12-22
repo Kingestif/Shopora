@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +16,52 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+          credentials: "include"
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      if (data.role === "ADMIN") {
+        router.push("/admin");
+      } else if (data.role === "SELLER") {
+        router.push("/seller");
+      } else if (data.role === "BUYER") {
+        router.push("/browse");
+      } else {
+        router.push("/")
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="border-none shadow-2xl bg-white/80 backdrop-blur-sm">
       <CardHeader className="space-y-1 text-center">
@@ -20,8 +70,9 @@ export default function LoginPage() {
         </CardTitle>
         <CardDescription>Sign in to your Shopora account</CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        <form action="/api/auth/login" method="POST" className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -31,8 +82,11 @@ export default function LoginPage() {
               placeholder="m@example.com"
               className="rounded-xl h-12 border-slate-200"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
@@ -49,16 +103,23 @@ export default function LoginPage() {
               type="password"
               className="rounded-xl h-12 border-slate-200"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <Button
             type="submit"
             className="w-full h-12 rounded-xl bg-black text-white hover:bg-gray-800 transition-all font-bold"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </CardContent>
+
       <CardFooter>
         <div className="text-sm text-center w-full text-muted-foreground">
           Don&apos;t have an account?{" "}
