@@ -8,12 +8,12 @@ import { ENV } from "../../lib/schemas/env.js";
 export const login = async (req: Request, res: Response) => {
     try {
         const input = loginValidation.parse(req.body)
-        const token = await loginService(input)
+        const response = await loginService(input)
 
         // Set token in HTTP-only cookie
         res.setHeader(
             "Set-Cookie",
-            serialize("authToken", token, {
+            serialize("authToken", response.token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "strict",
@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response) => {
 
         return res.status(200).json({
             status: "success",
-            message: "Logged in successfully"
+            role: response.role
         })
 
     } catch (error) {

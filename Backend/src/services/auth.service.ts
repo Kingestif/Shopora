@@ -34,7 +34,10 @@ export const loginService = async (input: loginType) => {
 
     const token = generateToken(user.id, user.role)
 
-    return token
+    return {
+        token,
+        role:user.role
+    }
 }
 
 export const emailVerificationService = async (token: string) => {
