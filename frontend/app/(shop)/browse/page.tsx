@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  ShoppingCart,
-  ArrowRight,
-  LogOut,
-} from "lucide-react";
+import { Search, ShoppingCart, ArrowRight, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -36,12 +31,19 @@ export default function BrowsePage() {
       setError(null);
 
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/product`,
-          {
-            credentials: "include",
-          }
-        );
+        const trimmedQuery = searchQuery.trim();
+        const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}`;
+
+        const url =
+          trimmedQuery.length > 0
+            ? `${baseUrl}/product/search?query=${encodeURIComponent(
+                trimmedQuery
+              )}`
+            : `${baseUrl}/product`;
+
+        const res = await fetch(url, {
+          credentials: "include",
+        });
 
         if (!res.ok) {
           throw new Error(`Failed to fetch products: ${res.statusText}`);
@@ -65,12 +67,12 @@ export default function BrowsePage() {
       }
     };
 
-    fetchProducts();
-  }, []);
+    const debounce = setTimeout(() => {
+      fetchProducts();
+    }, 400);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    return () => clearTimeout(debounce);
+  }, [searchQuery]);
 
   const handleLogout = async () => {
     try {
@@ -162,7 +164,7 @@ export default function BrowsePage() {
         </div>
       )}
 
-      {!loading && !error && filteredProducts.length === 0 && (
+      {!loading && !error && products.length === 0 && (
         <div className="py-20 text-center">
           <p className="text-slate-400 font-medium italic">
             No products found matching your search.
@@ -170,9 +172,9 @@ export default function BrowsePage() {
         </div>
       )}
 
-      {!loading && !error && filteredProducts.length > 0 && (
+      {!loading && !error && products.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <Link
               href={`/product/${product.id}`}
               key={product.id}
