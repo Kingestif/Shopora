@@ -49,14 +49,6 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/browse"
-                  className="text-lg text-gray-400 hover:text-white transition-colors"
-                >
-                  Browse
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/about"
                   className="text-lg text-gray-400 hover:text-white transition-colors"
                 >
@@ -71,14 +63,6 @@ export default function Footer() {
               Sell
             </h3>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/signup?role=seller"
-                  className="text-lg text-gray-400 hover:text-white transition-colors"
-                >
-                  Become a Seller
-                </Link>
-              </li>
               <li>
                 <Link
                   href="#"
