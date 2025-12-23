@@ -118,6 +118,35 @@ export default function SellerPage() {
     removeImage();
   };
 
+  const handleDeleteProduct = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/seller/product/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to delete product: ${res.statusText}`);
+      }
+
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong while deleting the product.");
+      }
+    }
+  };
+
   const handlePublish = async () => {
     if (!name || !price || !description || !selectedFile) {
       setError("Please fill all fields and add an image.");
@@ -414,6 +443,7 @@ export default function SellerPage() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                      onClick={() => handleDeleteProduct(product.id)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
