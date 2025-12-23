@@ -26,6 +26,17 @@ interface Product {
   sellerId: string;
 }
 
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  seller?: string;
+  image: string;
+  quantity: number;
+}
+
+const CART_STORAGE_KEY = "shopora-cart";
+
 export default function ProductPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -75,8 +86,54 @@ export default function ProductPage() {
   }, [id]);
 
   const handleAddToCart = () => {
+    if (!product) return;
+
     setIsAdding(true);
-    setTimeout(() => setIsAdding(false), 1000);
+
+    try {
+      const stored =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(CART_STORAGE_KEY)
+          : null;
+
+      let cart: CartItem[] = [];
+      if (stored) {
+        try {
+          cart = JSON.parse(stored) as CartItem[];
+        } catch {
+          cart = [];
+        }
+      }
+
+      const priceNumber = Number(product.price);
+      const safePrice = Number.isNaN(priceNumber) ? 0 : priceNumber;
+
+      const existingIndex = cart.findIndex((item) => item.id === product.id);
+
+      if (existingIndex !== -1) {
+        cart[existingIndex] = {
+          ...cart[existingIndex],
+          quantity: cart[existingIndex].quantity + 1,
+        };
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: safePrice,
+          seller: product.sellerId,
+          image: product.imageUrl,
+          quantity: 1,
+        });
+      }
+
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      }
+    } catch (error) {
+      console.error("Failed to add item to cart", error);
+    } finally {
+      setTimeout(() => setIsAdding(false), 1000);
+    }
   };
 
   if (loading) {
