@@ -28,11 +28,13 @@ export default function FeatureGrid() {
                 One-click buying powered by our ultra-low latency payment engine. Shopping at the speed of thought.
               </p>
             </CardHeader>
-            <CardContent className="px-8 pb-8">
-               <div className="mt-4 flex items-center text-black font-semibold gap-2 group-hover:gap-4 transition-all">
-                  Learn more<ArrowRight className="h-5 w-5" />
-               </div>
-            </CardContent>
+            <Link href="/about">
+              <CardContent className="px-8 pb-8">
+                 <div className="mt-4 flex items-center text-black font-semibold gap-2 group-hover:gap-4 transition-all">
+                    Learn more<ArrowRight className="h-5 w-5" />
+                 </div>
+              </CardContent>
+            </Link>
           </Card>
 
           <Card className="border border-slate-200 shadow-none hover:shadow-xl transition-all duration-300">
@@ -64,9 +66,6 @@ export default function FeatureGrid() {
              <p className="text-slate-400 text-lg mt-2">
                Join 10k+ creators selling globally.
              </p>
-             <Link href="/signup?role=seller" className="mt-4 text-xs font-bold uppercase tracking-widest hover:underline">
-               Apply to sell →
-             </Link>
           </Card>
 
         </div>
