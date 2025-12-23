@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Trash2,
   Minus,
@@ -115,11 +116,14 @@ export default function CartPage() {
               key={item.id}
               className="flex flex-col sm:flex-row gap-6 group"
             >
-              <div className="h-40 w-full sm:w-40 rounded-3xl bg-slate-100 overflow-hidden flex-shrink-0">
-                <img
+              <div className="relative h-40 w-full sm:w-40 rounded-3xl bg-slate-100 overflow-hidden flex-shrink-0">
+                <Image
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  fill
+                  unoptimized
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, 10rem"
                 />
               </div>
 
