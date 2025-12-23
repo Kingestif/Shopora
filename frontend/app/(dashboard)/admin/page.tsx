@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
-  Users,
-  ShoppingBag,
-  ShieldCheck,
   Search,
   MoreHorizontal,
   Ban,
@@ -31,47 +29,102 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const MOCK_USERS = [
-  {
-    id: "1",
-    name: "Marcus Thorne",
-    email: "marcus@tech.com",
-    role: "SELLER",
-  },
-  {
-    id: "2",
-    name: "Elena Rodriguez",
-    email: "elena@design.io",
-    role: "BUYER",
-  },
-  {
-    id: "3",
-    name: "Sarah Jenkins",
-    email: "s.jenkins@admin.com",
-    role: "ADMIN",
-  },
-];
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
-const MOCK_PRODUCTS = [
-  {
-    id: "1",
-    name: "Quantum Watch",
-    price: 540,
-    seller: "Marcus Thorne",
-    description: "A high-precision timepiece with haptic feedback.",
-  },
-  {
-    id: "2",
-    name: "Stealth Hoodie",
-    price: 120,
-    seller: "Vapor Studio",
-    description: "Water-repellent fabric with hidden zip pockets.",
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  imageUrl: string;
+  sellerId: string;
+}
+
+const PAGE_SIZE = 15;
 
 export default function AdminPage() {
-  const [users, setUsers] = useState(MOCK_USERS);
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [visibleUserCount, setVisibleUserCount] = useState(PAGE_SIZE);
+  const [visibleProductCount, setVisibleProductCount] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [usersRes, productsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/users`, {
+            credentials: "include",
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/products`, {
+            credentials: "include",
+          }),
+        ]);
+
+        if (!usersRes.ok) {
+          throw new Error(`Failed to fetch users: ${usersRes.statusText}`);
+        }
+        if (!productsRes.ok) {
+          throw new Error(
+            `Failed to fetch products: ${productsRes.statusText}`
+          );
+        }
+
+        const usersJson = await usersRes.json();
+        const productsJson = await productsRes.json();
+
+        if (!Array.isArray(usersJson.data) || usersJson.status !== "success") {
+          throw new Error("Invalid users response from server");
+        }
+        if (
+          !Array.isArray(productsJson.data) ||
+          productsJson.status !== "success"
+        ) {
+          throw new Error("Invalid products response from server");
+        }
+
+        const mappedUsers: User[] = usersJson.data.map((u: User) => ({
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+        }));
+
+        const mappedProducts: Product[] = productsJson.data.map(
+          (p: Product) => ({
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            price: String(p.price),
+            imageUrl: p.imageUrl,
+            sellerId: p.sellerId,
+          })
+        );
+
+        setUsers(mappedUsers);
+        setProducts(mappedProducts);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong while loading admin data.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto space-y-8 bg-white min-h-screen">
@@ -92,6 +145,8 @@ export default function AdminPage() {
           />
         </div>
       </div>
+
+      {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
 
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="bg-slate-100/50 p-1 rounded-xl mb-6">
@@ -115,7 +170,7 @@ export default function AdminPage() {
               <TableHeader className="bg-slate-50">
                 <TableRow>
                   <TableHead className="font-bold text-sm uppercase tracking-widest py-4">
-                    ID
+                    #
                   </TableHead>
                   <TableHead className="font-bold text-sm uppercase tracking-widest">
                     Name
@@ -132,33 +187,70 @@ export default function AdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-mono text-[10px] text-slate-400">
-                      {user.id}
-                    </TableCell>
-                    <TableCell className="font-bold text- text-slate-900">
-                      {user.name}
-                    </TableCell>
-                    <TableCell className="text-slate-500">
-                      {user.email}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={user.role === "ADMIN" ? "default" : "outline"}
-                        className="rounded-md font-mono text-xs bg-black text-white px-2"
-                      >
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <UserActions />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {loading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index} className="animate-pulse">
+                        <TableCell className="font-mono text-[10px] text-slate-400">
+                          <div className="h-3 w-4 bg-slate-100 rounded" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-32 bg-slate-100 rounded-full mb-2" />
+                          <div className="h-3 w-24 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-40 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-5 w-16 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="h-8 w-8 bg-slate-100 rounded-full inline-block" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : users.slice(0, visibleUserCount).map((user, index) => (
+                      <TableRow key={user.id} className="hover:bg-slate-50/50">
+                        <TableCell className="font-mono text-[10px] text-slate-400">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell className="font-bold text- text-slate-900">
+                          {user.name}
+                        </TableCell>
+                        <TableCell className="text-slate-500">
+                          {user.email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              user.role === "ADMIN" ? "default" : "outline"
+                            }
+                            className="rounded-md font-mono text-xs bg-black text-white px-2"
+                          >
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <UserActions />
+                        </TableCell>
+                      </TableRow>
+                    ))}
               </TableBody>
             </Table>
           </div>
+          {!loading && users.length > visibleUserCount && (
+            <div className="flex justify-center mt-4">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setVisibleUserCount((prev) =>
+                    Math.min(prev + PAGE_SIZE, users.length)
+                  )
+                }
+              >
+                View more users
+              </Button>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="products">
@@ -167,18 +259,18 @@ export default function AdminPage() {
               <TableHeader className="bg-slate-50">
                 <TableRow>
                   <TableHead className="font-bold text-sm uppercase tracking-widest py-4">
-                    Product ID
+                    Media
+                  </TableHead>
+                  <TableHead className="font-bold text-sm uppercase tracking-widest">
+                    #
                   </TableHead>
                   <TableHead className="font-bold text-sm uppercase tracking-widest">
                     Name
                   </TableHead>
                   <TableHead className="font-bold text-sm uppercase tracking-widest">
-                    Seller
-                  </TableHead>
-                  <TableHead className="font-bold text-sm uppercase tracking-widest">
                     Price
                   </TableHead>
-                  <TableHead className="font-bold text-sm uppercase tracking-widest">
+                  <TableHead className="text-right font-bold text-sm uppercase tracking-widest">
                     Description
                   </TableHead>
                   <TableHead className="text-right font-bold text-sm uppercase tracking-widest">
@@ -187,37 +279,89 @@ export default function AdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-mono text-[10px] text-slate-400">
-                      {product.id}
-                    </TableCell>
-                    <TableCell className="font-bold text-slate-900">
-                      {product.name}
-                    </TableCell>
-                    <TableCell className="text-slate-600 font-medium">
-                      {product.seller}
-                    </TableCell>
-                    <TableCell className="font-black italic">
-                      ${product.price}
-                    </TableCell>
-                    <TableCell className="text-slate-500 max-w-xs truncate">
-                      {product.description}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-red-500 hover:bg-red-50 h-8 w-8 rounded-full"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {loading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index} className="animate-pulse">
+                        <TableCell>
+                          <div className="h-10 w-10 rounded-lg bg-slate-100" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-6 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-32 bg-slate-100 rounded-full mb-2" />
+                          <div className="h-3 w-24 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-16 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <div className="h-3 w-40 bg-slate-100 rounded-full" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="h-8 w-8 rounded-full bg-slate-100 inline-block" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : products
+                      .slice(0, visibleProductCount)
+                      .map((product, index) => (
+                        <TableRow
+                          key={product.id}
+                          className="hover:bg-slate-50/50"
+                        >
+                          <TableCell className="font-mono text-[10px] text-slate-400">
+                            <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                              <Image
+                                src={product.imageUrl}
+                                alt={product.name}
+                                fill
+                                unoptimized
+                                className="object-cover"
+                                sizes="40px"
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-bold text-slate-900">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell className="text-slate-600 font-medium">
+                            {product.name}
+                          </TableCell>
+                          <TableCell className="font-black italic">
+                            ${Number(product.price).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-slate-500 max-w-xs truncate">
+                            {product.description}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500 hover:bg-red-50 h-8 w-8 rounded-full"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
               </TableBody>
             </Table>
           </div>
+          {!loading && products.length > visibleProductCount && (
+            <div className="flex justify-center mt-4">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setVisibleProductCount((prev) =>
+                    Math.min(prev + PAGE_SIZE, products.length)
+                  )
+                }
+              >
+                View more products
+              </Button>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
