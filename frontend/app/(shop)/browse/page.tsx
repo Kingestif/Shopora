@@ -18,7 +18,7 @@ import Image from "next/image";
 interface Product {
   id: string;
   name: string;
-  price: string; 
+  price: string;
   description: string;
   imageUrl: string;
 }
@@ -37,9 +37,12 @@ export default function BrowsePage() {
       setError(null);
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product`, {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/product`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (!res.ok) {
           throw new Error(`Failed to fetch products: ${res.statusText}`);
@@ -125,11 +128,39 @@ export default function BrowsePage() {
       </div>
 
       {loading && (
-        <div className="py-20 text-center text-lg font-medium">Loading products...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="group">
+              <Card className="border-none shadow-none bg-transparent overflow-hidden">
+                <div className="relative aspect-3/4 overflow-hidden rounded-[2rem] bg-slate-100 mb-4 animate-pulse" />
+
+                <CardContent className="p-0 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2 w-2/3">
+                      <div className="h-4 bg-slate-200 rounded-full w-5/6" />
+                      <div className="h-3 bg-slate-200 rounded-full w-2/3" />
+                    </div>
+                    <div className="h-5 bg-slate-200 rounded-full w-12" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3 bg-slate-200 rounded-full w-full" />
+                    <div className="h-3 bg-slate-200 rounded-full w-5/6" />
+                  </div>
+                </CardContent>
+
+                <CardFooter className="p-0 pt-4">
+                  <div className="h-3 bg-slate-200 rounded-full w-24" />
+                </CardFooter>
+              </Card>
+            </div>
+          ))}
+        </div>
       )}
 
       {error && (
-        <div className="py-20 text-center text-red-500 font-medium">{error}</div>
+        <div className="py-20 text-center text-red-500 font-medium">
+          {error}
+        </div>
       )}
 
       {!loading && !error && filteredProducts.length === 0 && (
