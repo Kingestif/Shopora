@@ -36,6 +36,11 @@ export default function SellerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -91,6 +96,7 @@ export default function SellerPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result as string);
@@ -101,7 +107,95 @@ export default function SellerPage() {
 
   const removeImage = () => {
     setSelectedImage(null);
+    setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const resetForm = () => {
+    setName("");
+    setPrice("");
+    setDescription("");
+    removeImage();
+  };
+
+  const handlePublish = async () => {
+    if (!name || !price || !description || !selectedFile) {
+      setError("Please fill all fields and add an image.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("price", price);
+      formData.append("description", description);
+      formData.append("image", selectedFile);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/seller/post-product`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to create product: ${res.statusText}`);
+      }
+
+      const json = await res.json();
+      if (json.status !== "success") {
+        throw new Error("Failed to create product");
+      }
+
+      // Refresh product list after successful creation
+      try {
+        setLoading(true);
+        const productsRes = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/seller/products`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (productsRes.ok) {
+          const productsJson = await productsRes.json();
+          if (
+            productsJson.status === "success" &&
+            Array.isArray(productsJson.data)
+          ) {
+            const mapped: Product[] = productsJson.data.map((p: Product) => ({
+              id: p.id,
+              name: p.name,
+              description: p.description,
+              imageUrl: p.imageUrl,
+              price: Number(p.price) || 0,
+            }));
+            setProducts(mapped);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+
+      resetForm();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong while creating the product.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -197,6 +291,8 @@ export default function SellerPage() {
                   id="name"
                   placeholder="e.g. Essential Tee"
                   className="rounded-lg border-zinc-200"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
@@ -212,6 +308,8 @@ export default function SellerPage() {
                   type="number"
                   placeholder="99.00"
                   className="rounded-lg border-zinc-200"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
 
@@ -226,11 +324,17 @@ export default function SellerPage() {
                   id="desc"
                   placeholder="Product details..."
                   className="rounded-lg border-zinc-200 resize-none h-24"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
             </div>
-            <Button className="w-full bg-black py-6 rounded-xl font-bold uppercase tracking-widest text-xs">
-              Publish Product
+            <Button
+              className="w-full bg-black py-6 rounded-xl font-bold uppercase tracking-widest text-xs disabled:opacity-60"
+              onClick={handlePublish}
+              disabled={submitting}
+            >
+              {submitting ? "Publishing..." : "Publish Product"}
             </Button>
           </DialogContent>
         </Dialog>
