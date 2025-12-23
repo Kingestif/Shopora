@@ -1,9 +1,10 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   ShoppingBag,
+  ShoppingCart,
   ArrowLeft,
   ShieldCheck,
   Truck,
@@ -27,6 +28,7 @@ interface Product {
 
 export default function ProductPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -200,9 +202,11 @@ export default function ProductPage() {
             <Button
               variant="outline"
               size="lg"
-              className="h-16 px-8 rounded-full border-2 font-bold hover:bg-slate-50"
+              className="h-16 px-8 rounded-full border-2 font-bold hover:bg-slate-50 flex items-center gap-2"
+              onClick={() => router.push("/cart")}
             >
-              Wishlist
+              <ShoppingCart className="h-5 w-5" />
+              View Cart
             </Button>
           </div>
 

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  SlidersHorizontal,
   ShoppingCart,
   ArrowRight,
   LogOut,
@@ -109,11 +108,11 @@ export default function BrowsePage() {
           </div>
 
           <Button
-            variant="outline"
-            size="icon"
-            className="h-12 w-12 rounded-full"
+            className="h-12 px-6 rounded-full font-semibold flex items-center gap-2 shadow-md"
+            onClick={() => router.push("/cart")}
           >
-            <SlidersHorizontal className="h-5 w-5" />
+            <ShoppingCart className="h-4 w-4" />
+            View Cart
           </Button>
 
           <Button
