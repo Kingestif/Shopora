@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { Plus, Pencil, Trash2, Upload, X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,7 +65,7 @@ export default function SellerPage() {
           throw new Error("Invalid response from server");
         }
 
-        const mapped: Product[] = json.data.map((p:Product) => ({
+        const mapped: Product[] = json.data.map((p: Product) => ({
           id: p.id,
           name: p.name,
           description: p.description,
@@ -143,11 +144,14 @@ export default function SellerPage() {
                     }`}
                 >
                   {selectedImage ? (
-                    <div className="relative w-full h-full p-2">
-                      <img
+                    <div className="relative w-full h-32 p-2">
+                      <Image
                         src={selectedImage}
                         alt="Preview"
-                        className="w-full h-32 object-contain rounded-lg"
+                        fill
+                        unoptimized
+                        className="object-contain rounded-lg"
+                        sizes="(max-width: 768px) 100vw, 400px"
                       />
                       <button
                         onClick={(e) => {
@@ -269,11 +273,14 @@ export default function SellerPage() {
                 className="border-zinc-50 group transition-colors hover:bg-zinc-50/30"
               >
                 <TableCell>
-                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
-                    <img
+                  <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
+                    <Image
                       src={product.imageUrl}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      fill
+                      unoptimized
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      sizes="48px"
                     />
                   </div>
                 </TableCell>
