@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Github, Twitter, Instagram } from "lucide-react";
+import { ShoppingBag, Github, Twitter, Instagram, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -35,23 +36,23 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold uppercase tracking-wider mb-4">Sell</h3>
             <ul className="space-y-2">
-              <li><Link href="/seller/guidelines" className="text-lg text-gray-400 hover:text-white transition-colors">Guidelines</Link></li>
-              <li><Link href="" className="text-lg text-gray-400 hover:text-white transition-colors">Become a Seller</Link></li>
-              <li><Link href="" className="text-lg text-gray-400 hover:text-white transition-colors">Seller Portal</Link></li>
+              <li><Link href="/signup?role=seller" className="text-lg text-gray-400 hover:text-white transition-colors">Become a Seller</Link></li>
+              <li><Link href="#" className="text-lg text-gray-400 hover:text-white transition-colors">Guidelines</Link></li>
+              <li><Link href="#" className="text-lg text-gray-400 hover:text-white transition-colors">Seller Portal</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-xl font-semibold uppercase tracking-wider mb-4">Connect</h3>
             <div className="flex gap-4">
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter className="h-7 w-7" />
+              <Link href="https://www.linkedin.com/in/estif/" target="_blank" className="text-gray-400 hover:text-white transition-colors">
+                <Linkedin className="h-7 w-7" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram className="h-7 w-7" />
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+              <Link href="https://github.com/Kingestif" target="_blank" className="text-gray-400 hover:text-white transition-colors">
                 <Github className="h-7 w-7" />
+              </Link>
+              <Link href="https://medium.com/@estifanos" target="_blank" className="text-gray-400 hover:text-white transition-colors">
+                <Image width={30} height={30} className="max-sm:w-5 max-sm:h-5" src="/medium.png" alt="" />
               </Link>
             </div>
           </div>
