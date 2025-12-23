@@ -31,6 +31,8 @@ interface Product {
   imageUrl: string;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function SellerPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,7 @@ export default function SellerPage() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -226,6 +229,15 @@ export default function SellerPage() {
       setSubmitting(false);
     }
   };
+
+  const totalPages = Math.max(1, Math.ceil(products.length / ITEMS_PER_PAGE));
+
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProducts = products.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -421,7 +433,7 @@ export default function SellerPage() {
                     </TableCell>
                   </TableRow>
                 ))
-              : products.map((product) => (
+              : paginatedProducts.map((product) => (
                   <TableRow
                     key={product.id}
                     className="border-zinc-50 group transition-colors hover:bg-zinc-50/30"
@@ -474,6 +486,35 @@ export default function SellerPage() {
                 ))}
           </TableBody>
         </Table>
+        {!loading && products.length > ITEMS_PER_PAGE && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-100 bg-zinc-50/60">
+            <p className="text-xs text-zinc-500 font-mono">
+              Page {safeCurrentPage} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full text-xs"
+                disabled={safeCurrentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full text-xs"
+                disabled={safeCurrentPage === totalPages}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
