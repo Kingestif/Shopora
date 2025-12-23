@@ -370,11 +370,6 @@ export default function SellerPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-        {loading && (
-          <div className="px-6 py-4 text-sm text-zinc-500">
-            Loading products...
-          </div>
-        )}
         {error && <div className="px-6 py-4 text-sm text-red-500">{error}</div>}
         {!loading && !error && products.length === 0 && (
           <div className="px-6 py-8 text-sm text-zinc-400 italic">
@@ -400,57 +395,83 @@ export default function SellerPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product) => (
-              <TableRow
-                key={product.id}
-                className="border-zinc-50 group transition-colors hover:bg-zinc-50/30"
-              >
-                <TableCell>
-                  <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.name}
-                      fill
-                      unoptimized
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="48px"
-                    />
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-zinc-900 text-lg">
-                      {product.name}
-                    </span>
-                    <span className="text-zinc-500 text-sm line-clamp-1">
-                      {product.description}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right font-mono font-bold text-lg">
-                  ${product.price.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex justify-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-lg text-zinc-400 hover:text-black hover:bg-white border border-transparent hover:border-zinc-200 transition-all"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                      onClick={() => handleDeleteProduct(product.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <TableRow
+                    key={index}
+                    className="border-zinc-50 animate-pulse"
+                  >
+                    <TableCell>
+                      <div className="w-12 h-12 rounded-xl bg-zinc-100" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <div className="h-4 w-32 bg-zinc-100 rounded-full" />
+                        <div className="h-3 w-48 bg-zinc-100 rounded-full" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 bg-zinc-100 rounded-full ml-auto" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-center gap-2">
+                        <div className="h-8 w-8 rounded-lg bg-zinc-100" />
+                        <div className="h-8 w-8 rounded-lg bg-zinc-100" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              : products.map((product) => (
+                  <TableRow
+                    key={product.id}
+                    className="border-zinc-50 group transition-colors hover:bg-zinc-50/30"
+                  >
+                    <TableCell>
+                      <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          fill
+                          unoptimized
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          sizes="48px"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-zinc-900 text-lg">
+                          {product.name}
+                        </span>
+                        <span className="text-zinc-500 text-sm line-clamp-1">
+                          {product.description}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold text-lg">
+                      ${product.price.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg text-zinc-400 hover:text-black hover:bg-white border border-transparent hover:border-zinc-200 transition-all"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                          onClick={() => handleDeleteProduct(product.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </div>
