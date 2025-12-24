@@ -4,11 +4,12 @@ import { ZodError } from "zod";
 import { getProductService } from "../../services/buyer.service.js";
 
 export const getProduct = async (req: Request, res: Response) => {
-    const input = idSchema.parse(req.params)
-
-    const product = await getProductService(input.id)
-
+    
     try {
+        const input = idSchema.parse(req.params)
+    
+        const product = await getProductService(input.id)
+        
         return res.status(200).json({
             status: "success",
             data: product
