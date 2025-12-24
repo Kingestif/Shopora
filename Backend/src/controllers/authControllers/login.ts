@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response) => {
             serialize("authToken", response.token, {
                 httpOnly: true,
                 secure: isProd,
-                sameSite: "lax",
+                sameSite: isProd ? "none" : "lax",
                 maxAge: Number(ENV.COOKIE_DURATION),
                 path: "/",
             })
