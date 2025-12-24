@@ -2,7 +2,16 @@
 
 Shopora is a high-performance, full-stack marketplace ecosystem engineered to bridge the gap between curated product discovery and professional inventory management.
 
+**Live deployments**
+
+- https://shopora-one-lac.vercel.app/
+
+![Homepage](frontend/public/Homepage.png)
+![Browse](frontend/public/Browse.png)
+![Inventory](frontend/public/Inventory.png)
+
 ## The Experience
+
 - **Buyers**: browse curated products and shop securely.
 - **Sellers**: manage inventory, publish products, and handle orders from a dedicated dashboard.
 - **Admins**: monitor users and products, moderate the platform, and oversee operations.
@@ -10,7 +19,7 @@ Shopora is a high-performance, full-stack marketplace ecosystem engineered to br
 The project is split into two apps inside a single repo:
 
 - `Backend/` – Node + Express API
-- `frontend/` – Next.js 
+- `frontend/` – Next.js
 
 ---
 
@@ -152,6 +161,7 @@ This will start Next.js.
 ---
 
 ## Contribute
+
 We’re building the future of commerce, and we'd love your help!
 
 ```
@@ -165,4 +175,5 @@ We’re building the future of commerce, and we'd love your help!
 
 * Open a Pull Request.
 ```
+
 Found a bug? Open an issue and we'll tackle it together!
